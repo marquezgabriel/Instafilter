@@ -8,10 +8,14 @@
 import CoreImage
 import CoreImage.CIFilterBuiltins
 import SwiftUI
+import AudioToolbox
 
 struct ContentView: View {
     @State private var image: Image?
+    
     @State private var filterIntensity = 0.5
+    @State private var filterRadius = 5.0
+    @State private var filterScale = 5.0
     
     @State private var showingImagePicker = false
     @State private var inputImage: UIImage?
@@ -40,12 +44,34 @@ struct ContentView: View {
                     // select an image
                     showingImagePicker = true
                 }
-                HStack {
-                    Text("Intensity")
-                    Slider(value: $filterIntensity)
-                        .onChange(of: filterIntensity) { _ in applyProcessing()}
+                
+                if currentFilter.inputKeys.contains(kCIInputIntensityKey) {
+                    HStack {
+                        Text("Intensity")
+                        Slider(value: $filterIntensity)
+                            .onChange(of: filterIntensity) { _ in applyProcessing()}
+                    }
+                    .padding(.vertical)
                 }
-                .padding(.vertical)
+            
+                if currentFilter.inputKeys.contains(kCIInputRadiusKey){
+                    HStack {
+                        Text("Radius")
+                        Slider(value: $filterRadius)
+                            .onChange(of: filterRadius) { _ in applyProcessing()}
+                    }
+                    .padding(.vertical)
+                }
+
+                if currentFilter.inputKeys.contains(kCIInputScaleKey) {
+                    HStack {
+                        Text("Scale")
+                        Slider(value: $filterScale)
+                            .onChange(of: filterScale) { _ in applyProcessing()}
+                    }
+                    .padding(.vertical)
+                }
+                
                 HStack {
                     Button("Change Filter") {
                         // change filter
@@ -78,8 +104,6 @@ struct ContentView: View {
                 Button("OK") { }
             } message: {
                 Text("Sorry, there was an error saving your image - please check that you have allowed permission for this app to save photos into your photos library.")
-                
-                
             }
         }
     
@@ -111,8 +135,8 @@ struct ContentView: View {
         let inputKeys = currentFilter.inputKeys
 
         if inputKeys.contains(kCIInputIntensityKey) { currentFilter.setValue(filterIntensity, forKey: kCIInputIntensityKey) }
-        if inputKeys.contains(kCIInputRadiusKey) { currentFilter.setValue(filterIntensity * 200, forKey: kCIInputRadiusKey) }
-        if inputKeys.contains(kCIInputScaleKey) { currentFilter.setValue(filterIntensity * 10, forKey: kCIInputScaleKey) }
+        if inputKeys.contains(kCIInputRadiusKey) { currentFilter.setValue(filterRadius, forKey: kCIInputRadiusKey) }
+        if inputKeys.contains(kCIInputScaleKey) { currentFilter.setValue(filterScale, forKey: kCIInputScaleKey) }
 
         guard let outputImage = currentFilter.outputImage else { return }
 
