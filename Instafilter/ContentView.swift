@@ -21,6 +21,7 @@ struct ContentView: View {
     let context = CIContext()
     
     @State private var showingFilterSheet = false
+    @State private var showingSaveError = false
     
     var body: some View {
         NavigationView {
@@ -52,6 +53,7 @@ struct ContentView: View {
                     }
                     Spacer()
                     Button("Save", action: save)
+                        .disabled(inputImage == nil)
                     }
                 }
             }
@@ -71,6 +73,13 @@ struct ContentView: View {
                 Button("Unsharp Mask") { setFilter(CIFilter.unsharpMask()) }
                 Button("Vignette") { setFilter(CIFilter.vignette()) }
                 Button("Cancel", role: .cancel) { }
+            }
+            .alert("Oops!", isPresented: $showingSaveError) {
+                Button("OK") { }
+            } message: {
+                Text("Sorry, there was an error saving your image - please check that you have allowed permission for this app to save photos into your photos library.")
+                
+                
             }
         }
     
